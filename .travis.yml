@@ -1,0 +1,40 @@
+language: julia
+os:
+  - linux
+julia:
+  - 0.6
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for jgoldfar/TermboxBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: NRzZqj9+GHBDJC23dzfnw6aEzNS9O1nTZd08RAmp/PqJy+9QNO4r+VxgnkjbqJHZjsTYUmu/JBS6FRKDRa8olguWAfQucGFkzcBDm1tGaMw1ctWE/YeEkANLQL5fvZ9vGOK/5TNg98IP8OIk5VLFOEDxz1mZsiGjug5FTtwKJU4y7VIncZzbpfEJ7n+aYoqE/SRdNrxYLqtE57vgB2T8qRHyQOdCQapDyR9L9AlBoHO6I0EG+xTXjZ7UUyQCNt/sOHyUovF++nhHuv8fXUOggighFMAE9fJDCPFvhJbifUDAAACjsuN+Rvb/PqU4oNT/JW0lOHI19iJz4Wyiz/Kwtp0sf6w+WA4vAL/6ffNIOGfccnrGEU/XLSyCuSWw+v8xgM3QF0HfPHorrSRkLddyD2/gMvYspWuclBEvHal9TKhiJZ84gFoTw8ATZ/zZ/FQzeU6TOsL4vpbEZnT1OdS+V+P8Oz+H/3Ih5uUSVV5eHRDyS2CKCflAd4tqam8C6dyzClsxs4zcX2cOfsUVFi7c0iJvhVZsIQrPWpWB33vr3ify0eQkqqd2ToaCu5MKkXVwI8ZbQagzaMmqq28gsm1Jt8fm2gYLfvauFxCoSnYOJrRRNlOraG9syz6d/o+9eDd90Wj8BtO89NFLWtLoGI23rQ3BT4j8u43175WPT+Hrtcw=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: jgoldfar/TermboxBuilder
+        tags: true
