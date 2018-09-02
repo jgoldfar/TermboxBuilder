@@ -4,7 +4,7 @@ os:
   - linux
 
 julia:
-  - 0.6
+  - 0.7
 
 git:
   depth: 99999999
@@ -23,7 +23,7 @@ sudo: required
 
 # Before anything else, get the latest versions of things
 before_script:
-  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(name="BinaryBuilder", rev="master"))'
 
 script:
   - julia build_tarballs.jl
